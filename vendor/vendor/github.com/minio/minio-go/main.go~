@@ -1,0 +1,215 @@
+package minio
+
+import (
+	"fmt"
+	"log"
+	"os"
+)
+
+// AutomateMain Start automation
+func AutomateMain() {
+	client, err := New("localhost:9000", os.Getenv("ACCESS_KEY"), os.Getenv("SECRET_KEY"), false)
+	if err != nil {
+		log.Fatal(err)
+	}
+	bucketName := "testbucket"
+	objectName := "testobject0"
+	// var result initiateMultipartUploadResult
+	// Setup
+	// automateCreateTestBucket(client, bucketName)
+	// defer automateDeleteTestBucket(client, bucketName)
+
+	// {
+	// 	// PASS
+	// 	var err error
+	// 	size := int64(10)
+	// 	randBytes := make([]byte, size)
+	// 	rand.Read(randBytes)
+	// 	log.Println("Test: parallel uploads of the same part")
+	// 	result, err = client.initiateMultipartUpload(bucketName, objectName, "")
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	log.Println("uploadID = ", result.UploadID)
+	// 	md5sum, sha256sum, partSize, err := client.hashCopy(ioutil.Discard, bytes.NewBuffer(randBytes))
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	wg := &sync.WaitGroup{}
+	// 	count := 100
+	// 	errs := make([]error, count)
+	// 	for i := 0; i < count; i++ {
+	// 		i := i
+	// 		wg.Add(1)
+	// 		go func() {
+	// 			defer wg.Done()
+	// 			_, err := client.uploadPart(bucketName, objectName, result.UploadID, bytes.NewBuffer(randBytes), 1, md5sum, sha256sum, partSize)
+	// 			if err != nil {
+	// 				log.Println(i, err)
+	// 			}
+	// 			errs[i] = err
+	// 		}()
+	// 	}
+	// 	wg.Wait()
+	// 	for _, err := range errs {
+	// 		if err != nil {
+	// 			log.Fatal(err)
+	// 		}
+	// 	}
+	// 	log.Println("Done")
+	// }
+
+	// {
+	// 	var err error
+	// 	size := int64(10)
+	// 	randBytes := make([]byte, size)
+	// 	rand.Read(randBytes)
+	// 	log.Println("Test: parallel uploads of the different part")
+	// 	result, err = client.initiateMultipartUpload(bucketName, objectName, "")
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	log.Println("uploadID = ", result.UploadID)
+	// 	md5sum, sha256sum, partSize, err := client.hashCopy(ioutil.Discard, bytes.NewBuffer(randBytes))
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	wg := &sync.WaitGroup{}
+	// 	count := 100
+	// 	errs := make([]error, count)
+	// 	for i := 0; i < count; i++ {
+	// 		i := i
+	// 		wg.Add(1)
+	// 		go func() {
+	// 			defer wg.Done()
+	// 			_, err := client.uploadPart(bucketName, objectName, result.UploadID, bytes.NewBuffer(randBytes), i+1, md5sum, sha256sum, partSize)
+	// 			if err != nil {
+	// 				log.Println(i, err)
+	// 			}
+	// 			errs[i] = err
+	// 		}()
+	// 	}
+	// 	wg.Wait()
+	// 	for _, err := range errs {
+	// 		if err != nil {
+	// 			log.Fatal(err)
+	// 		}
+	// 	}
+	// 	log.Println("Done")
+	// }
+
+	// {
+	// 	// pass
+	// 	fmt.Println("test serial PUT of small files")
+	// 	size := int64(10)
+	// 	randBytes := make([]byte, size)
+	// 	rand.Read(randBytes)
+
+	// 	count := 100
+	// 	errs := make([]error, count)
+	// 	for i := 0; i < count; i++ {
+	// 		_, err := client.PutObject(bucketName, objectName, bytes.NewBuffer(randBytes), "")
+	// 		errs[i] = err
+	// 	}
+	// 	for _, err := range errs {
+	// 		if err != nil {
+	// 			log.Fatal(err)
+	// 		}
+	// 	}
+	// 	log.Println("done")
+	// }
+
+	// {
+	// 	// PASS
+	// 	fmt.Println("parallel uploads of small files")
+	// 	size := int64(10)
+	// 	randBytes := make([]byte, size)
+	// 	rand.Read(randBytes)
+
+	// 	wg := &sync.WaitGroup{}
+	// 	count := 100
+	// 	errs := make([]error, count)
+	// 	for i := 0; i < count; i++ {
+	// 		i := i
+	// 		wg.Add(1)
+	// 		go func() {
+	// 			defer wg.Done()
+	// 			_, err := client.PutObject(bucketName, objectName, bytes.NewBuffer(randBytes), "")
+	// 			errs[i] = err
+	// 		}()
+	// 	}
+	// 	wg.Wait()
+	// 	for _, err := range errs {
+	// 		if err != nil {
+	// 			log.Fatal(err)
+	// 		}
+	// 	}
+	// 	log.Println("done")
+	// }
+
+	// {
+	// 	// PASS
+	// 	fmt.Println("race condition between get and put of small file")
+	// 	size := int64(10)
+	// 	randBytes := make([]byte, size)
+	// 	rand.Read(randBytes)
+	// 	if _, err := client.PutObject(bucketName, objectName, bytes.NewBuffer(randBytes), ""); err != nil {
+	// 		log.Fatal(err)
+	// 	}
+
+	// 	wg := &sync.WaitGroup{}
+	// 	count := 100
+	// 	errs := make([]error, count)
+	// 	for i := 0; i < count; i++ {
+	// 		i := i
+	// 		wg.Add(1)
+	// 		go func() {
+	// 			defer wg.Done()
+	// 			if i%50 == 0 {
+	// 				if _, err := client.PutObject(bucketName, objectName, bytes.NewBuffer(randBytes), ""); err != nil {
+	// 					log.Fatal(err)
+	// 				}
+	// 				return
+	// 			}
+	// 			reader, err := client.GetObject(bucketName, objectName)
+	// 			errs[i] = err
+	// 			if reader != nil {
+	// 				reader.Close()
+	// 			}
+	// 		}()
+	// 	}
+	// 	wg.Wait()
+	// 	for _, err := range errs {
+	// 		if err != nil {
+	// 			log.Fatal(err)
+	// 		}
+	// 	}
+	// 	log.Println("done")
+	// }
+
+	{
+		for i := 0; i < 2000; i++ {
+			if _, err := client.initiateMultipartUpload(bucketName, fmt.Sprintf("%s.%d", objectName, i), ""); err != nil {
+				log.Fatal(err)
+			}
+		}
+	}
+
+	// if res, err := client.initiateMultipartUpload(bucketName, fmt.Sprintf("%s.%d", objectName, 1898), ""); err != nil {
+	// 	log.Fatal(err)
+	// } else {
+	// 	fmt.Println(res)
+	// }
+
+}
+
+func automateCreateTestBucket(client *Client, bucketName string) {
+	err := client.MakeBucket("testbucket", "")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func automateDeleteTestBucket(client *Client, bucketName string) {
+	client.RemoveBucket(bucketName)
+}
