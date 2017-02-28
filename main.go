@@ -33,7 +33,7 @@ type Config struct {
 }
 
 // Holds all the info needed for routing.
-type ming struct {
+type mnm struct {
 	hashMap map[string]*minio.Client
 	hashes  []string
 	address string
@@ -41,7 +41,7 @@ type ming struct {
 }
 
 // Handles PUT requests.
-func (m ming) put(w http.ResponseWriter, r *http.Request) {
+func (m mnm) put(w http.ResponseWriter, r *http.Request) {
 	auth := r.URL.Query().Get("auth")
 	object := mux.Vars(r)["object"]
 	randIdx := rand.Intn(len(m.hashes))
@@ -53,7 +53,7 @@ func (m ming) put(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := client.PutObject("ming", object, r.Body, "application/octet-stream")
+	_, err := client.PutObject("mnm", object, r.Body, "application/octet-stream")
 	if err != nil {
 		w.WriteHeader(500)
 		if errResp, ok := err.(minio.ErrorResponse); ok {
@@ -63,12 +63,12 @@ func (m ming) put(w http.ResponseWriter, r *http.Request) {
 	}
 	// Return the URL with hash info which will be used to fetch the object during
 	// GET request.
-	respStr := fmt.Sprintf("%s/ming/%s/%s", m.address, m.hashes[randIdx], object)
+	respStr := fmt.Sprintf("%s/mnm/%s/%s", m.address, m.hashes[randIdx], object)
 	w.Write([]byte(respStr))
 }
 
 // Handles GET request.
-func (m ming) get(w http.ResponseWriter, r *http.Request) {
+func (m mnm) get(w http.ResponseWriter, r *http.Request) {
 	hash := mux.Vars(r)["hash"]
 	object := mux.Vars(r)["object"]
 	auth := r.URL.Query().Get("auth")
@@ -79,7 +79,7 @@ func (m ming) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	client := m.hashMap[hash]
-	reader, err := client.GetObject("ming", object)
+	reader, err := client.GetObject("mnm", object)
 
 	if err != nil {
 		w.WriteHeader(500)
@@ -95,8 +95,8 @@ func (m ming) get(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Parse command line and start the ming server.
-func startMing(ctx *cli.Context) error {
+// Parse command line and start the mnm server.
+func startMnm(ctx *cli.Context) error {
 	confPath := path.Join(ctx.GlobalString("config-dir"), "config.json")
 
 	configContents, err := ioutil.ReadFile(confPath)
@@ -111,7 +111,7 @@ func startMing(ctx *cli.Context) error {
 	}
 
 	address := ctx.GlobalString("address")
-	m := ming{hashMap: make(map[string]*minio.Client), address: address, auth: config.Auth}
+	m := mnm{hashMap: make(map[string]*minio.Client), address: address, auth: config.Auth}
 
 	for _, host := range config.Endpoints {
 		url, err := url.Parse(host.URL)
@@ -128,15 +128,15 @@ func startMing(ctx *cli.Context) error {
 	}
 
 	r := mux.NewRouter()
-	r.Methods("GET").Path("/ming/{hash}/{object:.+}").Queries("auth", "{auth:.*}").HandlerFunc(m.get)
-	r.Methods("GET").Path("/ming/{hash}/{object:.+}").HandlerFunc(m.get)
-	r.Methods("PUT").Path("/ming/{object:.+}").Queries("auth", "{auth:.*}").HandlerFunc(m.put)
-	r.Methods("PUT").Path("/ming/{object:.+}").HandlerFunc(m.put)
+	r.Methods("GET").Path("/mnm/{hash}/{object:.+}").Queries("auth", "{auth:.*}").HandlerFunc(m.get)
+	r.Methods("GET").Path("/mnm/{hash}/{object:.+}").HandlerFunc(m.get)
+	r.Methods("PUT").Path("/mnm/{object:.+}").Queries("auth", "{auth:.*}").HandlerFunc(m.put)
+	r.Methods("PUT").Path("/mnm/{object:.+}").HandlerFunc(m.put)
 
 	return http.ListenAndServe(address, r)
 }
 
-const globalMingConfigDir = ".ming"
+const globalMnmConfigDir = ".mnm"
 
 // getConfigPath get server config path
 func mustGetConfigDir() string {
@@ -144,7 +144,7 @@ func mustGetConfigDir() string {
 	if err != nil {
 		log.Fatal("Unable to get the home directory", err)
 	}
-	return filepath.Join(homeDir, globalMingConfigDir)
+	return filepath.Join(homeDir, globalMnmConfigDir)
 }
 
 func main() {
@@ -163,6 +163,6 @@ func main() {
 			Usage: "Path to the configuration directory",
 		},
 	}
-	app.Before = startMing
+	app.Before = startMnm
 	app.RunAndExitOnError()
 }
