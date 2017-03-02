@@ -1,5 +1,7 @@
 # Mnm (Minio Minimal)
 
+> This project is a work in progress.
+
 Minio Minimal provides a simple GET/PUT API to provide aggregated view of Minio instances.
 
 ## Running mnm
